@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ao Ponto</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Ao Ponto</h1>
+        <div>
+            <label for="timeInput">Tempo (minutos):</label>
+            <input type="number" id="timeInput" min="1" value="1">
+        </div>
+        <div>
+            <label for="alarmSelect">Escolha o som do alarme:</label>
+            <select id="alarmSelect">
+                <option value="alarm1.mp3">Alarme 1</option>
+                <option value="alarm2.mp3">Alarme 2</option>
+                <option value="alarm3.mp3">Alarme 3</option>
+                <option value="alarm4.mp3">Alarme 4</option>
+                <option value="alarm5.mp3">Alarme 5</option>
+                <option value="alarm6.mp3">Alarme 6</option>
+                <option value="alarm7.mp3">Alarme 7</option>
+            </select>
+            <button id="testAlarmButton" class="button">Testar</button>
+        </div>
+        <div id="timer" class="timer">00:00</div>
+        <button id="startButton" class="button">Start Timer</button>
+        <audio id="alarmSound" preload="auto"></audio>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
