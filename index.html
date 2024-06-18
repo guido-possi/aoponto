@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ao Ponto</title>
+    <title>Ao Ponto - Countdown Timer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Ao Ponto</h1>
+        <button id="stopButton" class="button" style="display:none;">Encerrar</button>
+        <h1>Ao Ponto - Countdown Timer</h1>
+        <div>
+            <span id="currentTime" class="current-time"></span>
+        </div>
         <div>
             <label for="timeInput">Tempo (minutos):</label>
             <input type="number" id="timeInput" min="1" value="1">
@@ -26,8 +30,12 @@
             </select>
             <button id="testAlarmButton" class="button">Testar</button>
         </div>
+        <div>
+            <label for="volumeControl">Volume:</label>
+            <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
+        </div>
         <div id="timer" class="timer">00:00</div>
-        <button id="startButton" class="button">Start Timer</button>
+        <button id="startButton" class="button">Iniciar</button>
         <audio id="alarmSound" preload="auto"></audio>
     </div>
     <script src="script.js"></script>
