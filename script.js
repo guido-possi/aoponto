@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
+    const resetButton = document.getElementById('resetButton');
+    const pauseButton = document.getElementById('pauseButton');
     const timerDisplay = document.getElementById('timer');
     const alarmSound = document.getElementById('alarmSound');
     const timeInput = document.getElementById('timeInput');
@@ -11,6 +13,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     let timer;
     let timeLeft;
+    let isPaused = false;
     let alarmCount = 0;
     let alarmInterval;
     let alarmCycleCount = 0;
@@ -25,6 +28,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
         alarmSelect.value = localStorage.getItem('alarmSelect');
     }
 
+    // Solicitar permissão para notificações
+    if ('Notification' in window && Notification.permission !== 'granted') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('Notificações permitidas');
+            }
+        });
+    }
+
     // Mostrar o horário atual ao carregar a página
     showCurrentTime();
     
@@ -33,24 +45,31 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     startButton.addEventListener('click', startTimer);
     stopButton.addEventListener('click', stopAlarm);
+    resetButton.addEventListener('click', resetTimer);
+    pauseButton.addEventListener('click', togglePause);
     testAlarmButton.addEventListener('click', testAlarm);
     volumeControl.addEventListener('input', updateVolume);
 
     function startTimer() {
+        if (!isPaused) {
+            timeLeft = parseInt(timeInput.value) * 60;
+        }
+
         if (timer) {
             clearInterval(timer);
         }
 
-        timeLeft = parseInt(timeInput.value) * 60;
         updateTimerDisplay();
         saveSettings();
 
         timer = setInterval(() => {
-            timeLeft--;
-            updateTimerDisplay();
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                playAlarm();
+            if (!isPaused) {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    playAlarm();
+                }
             }
         }, 1000);
     }
@@ -62,6 +81,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
         alarmSound.currentTime = 0;
         stopButton.style.display = 'none';
         alarmCycleCount = 0;
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        isPaused = false;
+        timeLeft = parseInt(timeInput.value) * 60;
+        updateTimerDisplay();
+    }
+
+    function togglePause() {
+        if (isPaused) {
+            isPaused = false;
+            startTimer();
+        } else {
+            isPaused = true;
+            clearInterval(timer);
+        }
     }
 
     function playAlarm() {
@@ -83,6 +119,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if (alarmCycleCount < totalAlarmRepeats) {
             resetAlarmTimeout = setTimeout(playAlarm, 40000);
         }
+
+        sendNotification();
     }
 
     function testAlarm() {
@@ -109,7 +147,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const now = new Date();
         const hours = now.getHours();
         const minutes = now.getMinutes();
-        const seconds = now.getSeconds();
-        currentTimeDisplay.textContent = `Horário atual: ${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        currentTimeDisplay.textContent = `Saída almoço: ${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+    }
+
+    function sendNotification() {
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.ready.then(function(registration) {
+                registration.showNotification('Ao Ponto - Countdown Timer', {
+                    body: 'O cronômetro terminou!',
+                    icon: 'icon.png',
+                    badge: 'icon.png'
+                });
+            });
+        }
     }
 });

@@ -14,16 +14,29 @@ body {
     padding-top: 50px; /* Espaço para o botão Encerrar */
 }
 
-.timer {
-    font-size: 48px;
-    margin-bottom: 20px;
+.timer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.button {
+.timer {
+    font-size: 48px;
+    margin: 0 10px;
+}
+
+.button, .icon-button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
     margin: 5px;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
 }
 
 #stopButton {
