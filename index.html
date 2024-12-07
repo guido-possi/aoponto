@@ -4,54 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ao Ponto</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input, button, select {
+            margin: 10px;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <button id="stopButton" class="button" style="display:none;">Encerrar</button>
-        <h1>Ao Ponto</h1>
-        <div>
-            <span id="currentTime" class="current-time"></span>
-        </div>
-        <div>
-            <label for="timeInput">Minutos:</label>
-            <input type="number" id="timeInput" min="1" value="1">
-        </div>
-        <div>
-            <label for="alarmSelect">Alarme:</label>
-            <select id="alarmSelect">
-                <option value="alarm1.mp3">Alarme 1</option>
-                <option value="alarm2.mp3">Alarme 2</option>
-                <option value="alarm3.mp3">Alarme 3</option>
-                <option value="alarm4.mp3">Alarme 4</option>
-                <option value="alarm5.mp3">Alarme 5</option>
-                <option value="alarm6.mp3">Alarme 6</option>
-                <option value="alarm7.mp3">Alarme 7</option>
-            </select>
-            <button id="testAlarmButton" class="button">Testar</button>
-        </div>
-        <div>
-            <label for="volumeControl">Volume:</label>
-            <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
-        </div>
-        <div class="timer-container">
-            <button id="resetButton" class="icon-button">X</button>
-            <div id="timer" class="timer">00:00</div>
-            <button id="pauseButton" class="icon-button">||</button>
-        </div>
-        <button id="startButton" class="button">Iniciar</button>
-        <audio id="alarmSound" preload="auto"></audio>
-    </div>
+    <h1>Ao Ponto</h1>
+    <h2 id="saida-almoco"></h2>
+    <label for="minutos">Minutos:</label>
+    <input type="number" id="minutos" value="57" />
+    <br />
+    <label for="alarme">Alarme:</label>
+    <select id="alarme">
+        <option value="alarme1.mp3">Alarme 1</option>
+        <option value="alarme2.mp3">Alarme 2</option>
+    </select>
+    <button id="testar">Testar</button>
+    <br />
+    <label for="volume">Volume:</label>
+    <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5" />
+    <br />
+    <div id="cronometro" style="font-size: 48px; margin: 20px;">57:00</div>
+    <button id="iniciar">Iniciar</button>
+
+    <audio id="audio-alarme"></audio>
+
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').then(function(registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(err) {
-                console.log('ServiceWorker registration failed: ', err);
-            });
-        }
+        let interval;
+        const cronometroDisplay = document.getElementById("cronometro");
+        const minutosInput = document.getElementById("minutos");
+        const alarmeSelect = document.getElementById("alarme");
+        const volumeSlider = document.getElementById("volume");
+        const audioAlarme = document.getElementById("audio-alarme");
+        const saidaAlmoco = document.getElementById("saida-almoco");
+        const iniciarButton = document.getElementById("iniciar");
+        const testarButton = document.getElementById("testar");
+
+        // Mostra o horário de início
+        const atualizarHorarioSaida = () => {
+            const agora = new Date();
+            const horarioSaida = new Date(agora.getTime() + minutosInput.value * 60000);
+            saidaAlmoco.textContent = `Saída almoço: ${horarioSaida.getHours()}:${horarioSaida.getMinutes().toString().padStart(2, "0")}`;
+        };
+
+        // Atualiza o cronômetro
+        const iniciarCronometro = () => {
+            clearInterval(interval);
+            let tempoRestante = parseInt(minutosInput.value) * 60;
+
+            interval = setInterval(() => {
+                const minutos = Math.floor(tempoRestante / 60);
+                const segundos = tempoRestante % 60;
+
+                cronometroDisplay.textContent = `${minutos}:${segundos.toString().padStart(2, "0")}`;
+
+                if (tempoRestante <= 0) {
+                    clearInterval(interval);
+                    tocarAlarme();
+                }
+
+                tempoRestante--;
+            }, 1000);
+        };
+
+        // Toca o alarme
+        const tocarAlarme = () => {
+            audioAlarme.src = alarmeSelect.value;
+            audioAlarme.volume = volumeSlider.value;
+            audioAlarme.play();
+        };
+
+        // Testa o alarme
+        testarButton.addEventListener("click", () => {
+            tocarAlarme();
+        });
+
+        // Inicia o cronômetro
+        iniciarButton.addEventListener("click", () => {
+            atualizarHorarioSaida();
+            iniciarCronometro();
+        });
+
+        // Atualiza o volume
+        volumeSlider.addEventListener("input", () => {
+            audioAlarme.volume = volumeSlider.value;
+        });
+
+        // Atualiza o horário de saída ao carregar a página
+        atualizarHorarioSaida();
     </script>
-    <script src="script.js"></script>
 </body>
 </html>
