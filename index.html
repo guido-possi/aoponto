@@ -37,9 +37,8 @@
     <br />
     <div id="cronometro" style="font-size: 48px; margin: 20px;">57:00</div>
     <button id="iniciar">Iniciar</button>
-    <button id="encerrar" style="display: none;">Encerrar</button>
 
-    <audio id="audio-alarme" loop></audio>
+    <audio id="audio-alarme"></audio>
 
     <script>
         let interval;
@@ -50,7 +49,6 @@
         const audioAlarme = document.getElementById("audio-alarme");
         const saidaAlmoco = document.getElementById("saida-almoco");
         const iniciarButton = document.getElementById("iniciar");
-        const encerrarButton = document.getElementById("encerrar");
         const testarButton = document.getElementById("testar");
 
         // Mostra o horário de início
@@ -85,21 +83,11 @@
             audioAlarme.src = alarmeSelect.value;
             audioAlarme.volume = volumeSlider.value;
             audioAlarme.play();
-            encerrarButton.style.display = "inline-block"; // Exibe o botão "Encerrar"
         };
-
-        // Para o alarme
-        encerrarButton.addEventListener("click", () => {
-            audioAlarme.pause();
-            audioAlarme.currentTime = 0; // Reinicia o áudio
-            encerrarButton.style.display = "none"; // Esconde o botão "Encerrar"
-        });
 
         // Testa o alarme
         testarButton.addEventListener("click", () => {
-            audioAlarme.src = alarmeSelect.value;
-            audioAlarme.volume = volumeSlider.value;
-            audioAlarme.play();
+            tocarAlarme();
         });
 
         // Inicia o cronômetro
