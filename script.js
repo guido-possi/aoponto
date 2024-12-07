@@ -14,11 +14,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let timer;
     let timeLeft;
     let isPaused = false;
-    let alarmCount = 0;
-    let alarmInterval;
-    let alarmCycleCount = 0;
-    let resetAlarmTimeout;
-    let totalAlarmRepeats = 5;
 
     // Carregar configurações armazenadas
     if (localStorage.getItem('timeInput')) {
@@ -40,7 +35,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Mostrar o horário atual ao carregar a página
     showCurrentTime();
     
-    // Iniciar o cronômetro automaticamente ao carregar a página
+    // Iniciar o cronômetro automaticamente ao carregar a página (opcional)
     startTimer();
 
     startButton.addEventListener('click', startTimer);
@@ -75,12 +70,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     function stopAlarm() {
-        clearInterval(alarmInterval);
-        clearTimeout(resetAlarmTimeout);
         alarmSound.pause();
         alarmSound.currentTime = 0;
+        alarmSound.loop = false;
         stopButton.style.display = 'none';
-        alarmCycleCount = 0;
     }
 
     function resetTimer() {
@@ -102,30 +95,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     function playAlarm() {
         alarmSound.src = alarmSelect.value;
-        alarmSound.play();
+        alarmSound.loop = true; // Alarme vai tocar continuamente
+        alarmSound.play().catch(err => console.error('Falha ao reproduzir o alarme:', err));
         stopButton.style.display = 'block';
-        alarmCount = 1;
-        alarmCycleCount++;
-
-        alarmInterval = setInterval(() => {
-            if (alarmCount < 3) {
-                alarmSound.play();
-                alarmCount++;
-            } else {
-                clearInterval(alarmInterval);
-            }
-        }, 3000);
-
-        if (alarmCycleCount < totalAlarmRepeats) {
-            resetAlarmTimeout = setTimeout(playAlarm, 40000);
-        }
-
         sendNotification();
     }
 
     function testAlarm() {
         alarmSound.src = alarmSelect.value;
-        alarmSound.play();
+        alarmSound.loop = false;
+        alarmSound.currentTime = 0;
+        alarmSound.play().catch(err => console.error('Falha ao reproduzir teste do alarme:', err));
     }
 
     function updateTimerDisplay() {
